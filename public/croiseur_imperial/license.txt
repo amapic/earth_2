@@ -1,0 +1,11 @@
+Model Information:
+* title:	Star Destroyer - Low Poly
+* source:	https://sketchfab.com/3d-models/star-destroyer-low-poly-f9b8df8b9477478b887e2e8aec356884
+* author:	Robin Butler (https://sketchfab.com/StarTrekGuy)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Star Destroyer - Low Poly" (https://sketchfab.com/3d-models/star-destroyer-low-poly-f9b8df8b9477478b887e2e8aec356884) by Robin Butler (https://sketchfab.com/StarTrekGuy) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
