@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client'
 
-import App from './components/Earth'
+import App from './components/Interface'
 
 const root = document.getElementById('root')
 
