@@ -5,9 +5,8 @@ import {
   useLoader,
   useThree,
   extend,
-  // Canvas,
 } from "@react-three/fiber";
-// import ff from "fonts"
+
 
 import {
   OrbitControls,
@@ -20,13 +19,13 @@ import { CameraControls } from "./CameraControls";
 import * as THREE from "three";
 import { EllipseCurve } from "three";
 import RoundedRectangle from "../js/roundedRectangle";
+import WrapRotation,{Main_Graph} from "../js/work";
 
 function Carre(props) {
   const ref = useRef(null);
   const [hovered, hover] = useState(false);
   const [clicked, click] = useState(false);
 
-  // const colorMap = useLoader(TextureLoader, "map.jpg");
 
   return (
     <mesh {...props} ref={ref}>
@@ -36,21 +35,68 @@ function Carre(props) {
   );
 }
 
-function Fform() {
+function Fond({ position, width=100, height=100,color="blue" }) {
+  const ref = useRef(null);
+
   return (
-    <group>
-      <mesh>
-        <boxGeometry args={[100, 100, 0]} />
-        <meshBasicMaterial color={ "blue"} />
-      </mesh>
-      <mesh>
-        <sphereGeometry args={[100, 100, 0]} />
-        <meshBasicMaterial color={"red" } />
-        
-      </mesh>
-    </group>
+    <mesh position={position} ref={ref}>
+      <boxGeometry args={[width, height, 0]} />
+      <meshBasicMaterial color={color} />
+    </mesh>
   );
 }
+
+// class Duration(delta){
+//   var yy=Date.now()
+//   constructor(hauteur, largeur) {
+//     this.hauteur = hauteur;
+//     this.largeur = largeur;
+//   }
+// }
+
+function Fform({timeInit=0,color="red"}) {
+  const mesh = useRef();
+  var time=timeInit;
+  var backWard=false;
+  useFrame((state,delta) => {
+    console.log(backWard);
+    if (Math.random()>0.01){
+      if(!backWard){
+      time+= 0.01;
+      }else{
+        time-= 0.01;
+      }
+    }else{
+      time+= 0.01;
+      backWard=true;
+      setTimeout(()=>{backWard=false}, 3000);
+    }
+    mesh.current.position.x = 300*Math.cos(time );
+    mesh.current.position.y = 300*Math.sin(time );
+    mesh.current.rotation.z = time;
+  });
+  return (
+    <group position={[0, 0, 0]} ref={mesh}>
+      
+        <mesh position={[0, 10, 0]}>
+          <sphereGeometry args={[5, 20, 20]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+        <mesh position={[0, -10, 0]}>
+          <sphereGeometry args={[5, 20, 20]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+        <mesh >
+          <boxGeometry args={[2, 15, 0]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+      {/* </group> */}
+    </group>
+
+  );
+}
+
+
 
 function Ringu({ nSegment, espace, i }) {
   return (
@@ -77,23 +123,77 @@ function Gg() {
   const array = Array(20) // array size is 10
     .fill()
     .map(() => 50 * Math.random());
-  // useFrame((state, delta) => (console.log(ref.current.position)))
   const sdg = array.map((data, i) => (
-    //  CubeDataLoop(gg,i
     <Ringu key={i} nSegment={array.length} i={i} espace={0.1} />
   ));
   useFrame(() => (mesh.current.rotation.z += 0.01));
   return <mesh ref={mesh}>{sdg}</mesh>;
 }
 
+function Gg2({color}) {
+  // const mesh = useRef();
+  var time=0;
+  var timeInit;
+  const array = [0.5,0.7,0.9];
+  const mesh = useRef();
+  var time=timeInit;
+  var backWard=false;
+  var kk={x:0,y:0,rotationz:0};
+  useFrame((state,delta) => {
+    console.log(backWard);
+    if (Math.random()>0.01){
+      if(!backWard){
+      time+= 0.01;
+      }else{
+        time-= 0.01;
+      }
+    }else{
+      time+= 0.01;
+      backWard=true;
+      setTimeout(()=>{backWard=false}, 3000);
+    }
+    kk.x = 300*Math.cos(time );
+    kk.y = 300*Math.sin(time );
+    kk.rotationz = time;
+    mesh.current.rotation.y=time;
+  });
+  
+  const sdg = array.map((data, i) => (
+
+    <FformBarre positionPerso={[kk.x,kk.y,0]} rotationPerso={kk.rotationz} key={i} timeInit={data} color={color} />)
+  
+  );
+  
+  return <mesh position={[100,0,100]} ref={mesh}>{sdg}</mesh>;
+}
+
+// function LoopComponent() {
+//   const mesh = useRef();
+//   const array = [0.5,0.7,0.9];
+//   const sdg = array.map((data, i) => (
+//     <Fform key={i} timeInit={data} /> 
+//   ));
+  
+//   return <mesh ref={mesh}>{sdg}</mesh>;
+// }
+
+// const withClasses = (WrappedComponent) => {
+//   return (props) => (
+//       <div>
+//           <WrappedComponent {...props} />
+//       </div>
+//          );
+//   };
+
+  // const Hh=withClasses(Fform);
+
+
+
 export default function App(props) {
   var POS_X = 0;
   var POS_Y = 0;
   var POS_Z = 1800;
 
-  // var POS_X = 100;
-  // var POS_Y = 100;
-  // var POS_Z = 100;
   var WIDTH = 1000;
   var HEIGHT = 600;
 
@@ -106,64 +206,24 @@ export default function App(props) {
   camera.position.set(POS_X, POS_Y, POS_Z);
   camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-  // useEffect(() => {
-  //   console.log(camera.position);
-  // }, [camera]);
-  // const array = Array(20) // array size is 10
-  //   .fill()
-  //   .map(() => 50 * Math.random());
-  // // useFrame((state, delta) => (console.log(ref.current.position)))
-  // const sdg = array.map((data, i) => (
-  //   //  CubeDataLoop(gg,i
-  //   <Ringu key={i} nSegment={array.length} i={i} espace={0.1} />
-  // ));
-  // console.log(sdg);
   const ref = useRef();
   return (
     <React.StrictMode>
-      <Canvas camera={camera} style={{ width: "100%", height: "500px" }}>
-        {/* <Print_cam_pos camera={camera} /> */}
+      <Canvas camera={camera} style={{ width: "100%", height: "900px" }}>
+       
         <CameraControls ref={ref} camera={camera} />
-        {/* <Fond position={[0, 0, -1000]} height={4000} width={4000} /> */}
-        {/* <Carre /> */}
-        <Gg />
-        <Fform />
-        {/* <RoundedRectangle w={50} h={50} r={4} s={0.5}/> */}
-        {/* {sdg} */}
-        {/* <Ringu i={0.5} /> */}
-        {/* <Ringu nSegment={4}/> */}
-        {/* <mesh {...props} ref={ref}>
-          <EllipseCurve args={[0, 0, 10,10,0,2*Math.PI,false,0]} />
-          <meshBasicMaterial color={"orange"} />
-        </mesh> */}
-        {/* <Scene /> */}
-        {/* <pointLight position={[10, 10, 10]} /> */}
-        {/* <OrbitControls target={[10, 0, 0]} /> */}
-        {/* <CameraControls /> */}
-        {/* <PerspectiveCamera makeDefault /> */}
-        <Text
-          position={[-1000, 0, 0]}
-          fontSize={5}
-          // font={"fonts/helvetiker_regular.typeface.json"}
-          scale={[20, 20, 20]}
-          color="black"
-          anchorX="center"
-          anchorY="middle"
-          shininess={0}
-        >
-          Official nasa pâté data
-          <meshNormalMaterial />
-        </Text>
 
-        {/* <Ring>
-          <meshBasicMaterial color="hotpink" />
-        </Ring> */}
+        <Gg />
+        <Main_Graph />
+        {/* <Gg2 color={"#87CEEB"} /> */}
+        <WrapRotation color={"#87CEEB"}  />
+        {/* <LoopComponent Component={<Hh/>} /> */}
+        <Fond position={[0,0,-100]} width={4000} height={4000} color={"#020C4D"}/>
+       
         <primitive position={[0, 0, 0]} object={new THREE.AxesHelper(2000)} />
-        {/* <Stars radius={600} depth={50} count={5000} factor={2} saturation={0} fade speed={1} /> */}
-      </Canvas>
-      {/* <Canvas>
         
-        </Canvas> */}
+      </Canvas>
+
     </React.StrictMode>
   );
 }

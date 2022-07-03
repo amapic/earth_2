@@ -23,7 +23,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/components/Tank.jsx"  ],
+, "src/components/Tank.jsx", "src/components/example.jsx"  ],
   "exclude": [
     "node_modules"
   ]
