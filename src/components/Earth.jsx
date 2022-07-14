@@ -93,24 +93,79 @@ function Carre(props) {
   const [clicked, click] = useState(false);
 
   // const colorMap = useLoader(TextureLoader, "map.jpg");
-
+  console.log(ref.lookAt);
+  useEffect(() => {
+    console.log(ref.lookAt);
+  },[]);
+  const points = []
+  
   return (
-    <mesh {...props} ref={ref}>
+    <group {...props} ref={ref}>
+    <mesh >
       <boxGeometry args={[100, 100, 0]} />
       <meshBasicMaterial color={clicked ? "red" : "orange"} />
     </mesh>
+    {/* <line ref={ref} geometry={lineGeometry}>
+    <lineBasicMaterial attach="material" color={'#9c88ff'} linewidth={10} linecap={'round'} linejoin={'round'} />
+  </line> */}
+  </group>
+  //   <mesh {...props} ref={ref}>
+  //   <LineGeometry args={[100, 100, 0]} />
+  //   <meshBasicMaterial color={clicked ? "red" : "orange"} />
+  // </mesh>
+//   <line >
+//   <bufferGeometry />
+//   <lineBasicMaterial color="hotpink" />
+// </line>
   );
 }
 
-function Fond({ position, width, height }) {
+function lookAtperso(position,point){
+  var position2=new THREE.Vector3(position[0],position[1],position[2]);
+  var point2=new THREE.Vector3(point[0],point[1],point[2]);
+  position2=position2.normalize();
+  point2=point2.normalize();
+  var zz=new THREE.Vector3(0,0,1)
+  // var ggg=zz.projectOnPlane(new THREE.Vector3(0,0,1))
+  // console.log(Math.acos(new THREE.Vector3(position2.x,position2.y,0).dot(new THREE.Vector3(point2.x,point2.y,0))));
+  //var tt=position2.projectOnPlane(zz)
+  // console.log(new THREE.Vector3(position2.x,position2.y,0).dot(new THREE.Vector3(zz.x,zz.y,0)))
+  // console.log(new THREE.Vector3(position2.x,0,position2.z).dot(new THREE.Vector3(zz.x,0,zz.z)))
+  // console.log(new THREE.Vector3(position2.x,position2.y,0).dot(new THREE.Vector3(zz.x,zz.y,0)))
+  var jj=new THREE.Vector3(position[0],position[1],0).angleTo(new THREE.Vector3(1,0,0))
+  var hh=new THREE.Vector3(position[0],position[1],0).angleTo(new THREE.Vector3(0,1,0))
+  var gg=new THREE.Vector3(0,position[1],position[2]).angleTo(new THREE.Vector3(0,0,1))
+  console.log(new THREE.Vector2(position2.z,position2.y).dot(new THREE.Vector2(zz.z,zz.y)))
+  console.log(new THREE.Vector2(position2.x,position2.z).dot(new THREE.Vector2(zz.x,zz.z)))
+  console.log(new THREE.Vector2(position2.x,position2.y).dot(new THREE.Vector2(zz.x,zz.y)))
+  
+  // console.log(new THREE.Vector3(position2.x,position2.y,0).angleTo(zz))
+  // console.log(new THREE.Vector3(0,position2.y,position2.z).angleTo(zz))
+  // console.log(new THREE.Vector3(position2.x,0,position2.z).angleTo(zz))
+  return(
+  //   [
+  //   // Math.atan(position[0]/position[1]),
+  //   -Math.atan(position[2]/position[1]),
+  //   Math.atan(position[2]/position[0]),
+  //   -Math.atan(position[0]/position[1])
+  // ]
+  [Math.acos(new THREE.Vector3(0,position2.y,position2.z).dot(new THREE.Vector3(0,zz.y,zz.z))),
+    Math.acos(new THREE.Vector3(position2.x,0,position2.z).dot(new THREE.Vector3(zz.x,0,zz.z))),
+    
+    Math.acos(new THREE.Vector3(position2.x,position2.y,0).dot(new THREE.Vector3(zz.x,zz.y,0)))]
+
+  )
+}
+
+function Fond({ position, width, height,lookAt }) {
   const ref = useRef(null);
   const [hovered, hover] = useState(false);
   const [clicked, click] = useState(false);
 
   const starMap = useLoader(TextureLoader, "/textures/stars.jpg");
-
+  console.log(ref.lookAt);
   return (
-    <mesh position={position} ref={ref}>
+    <mesh position={position} ref={ref} lookAt={lookAt}>
       <boxGeometry args={[width, height, 0]} />
       <meshBasicMaterial map={starMap} />
     </mesh>
@@ -139,18 +194,29 @@ export default function App(props) {
   // useEffect(() => {
   //   console.log(camera.position);
   // }, [camera]);
-
+  var points=[]
   // useFrame((state, delta) => (console.log(ref.current.position)))
-
+  console.log(lookAtperso([200,200,200],[0,0,0]));  
   const ref = useRef();
+  points.push(new THREE.Vector3(0, 0, 0))
+  points.push(new THREE.Vector3(400, 400, 400))
+ 
+  // points.push(new THREE.Vector3(10, 0, 0))
+
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
   return (
     <React.StrictMode>
       <Canvas camera={camera} style={{ width: "100%", height: "500px" }}>
         {/* <Print_cam_pos camera={camera} /> */}
         <CameraControls ref={ref} camera={camera} />
+        
         <Fond position={[0, 0, -1000]} height={4000} width={4000} />
-        <Carre />
-        <Scene />
+        <Carre rotation={lookAtperso(new THREE.Vector3(200,200,200),new THREE.Vector3(0,0,1))} position={[200,200,200]} />
+        <Carre  position={[400,400,400]} />
+        <line geometry={lineGeometry}>
+          <lineBasicMaterial attach="material" color={'#9c88ff'} linewidth={10} linecap={'round'} linejoin={'round'} />
+        </line>
+        {/* <Scene />  */}
         {/* <pointLight position={[10, 10, 10]} /> */}
         {/* <OrbitControls target={[10, 0, 0]} /> */}
         {/* <CameraControls /> */}
@@ -169,6 +235,8 @@ export default function App(props) {
           <meshNormalMaterial />
         </Text>
         {/* <Stars radius={600} depth={50} count={5000} factor={2} saturation={0} fade speed={1} /> */}
+        <primitive  position={[0, 0, 0]} object={new THREE.AxesHelper(2000)} />
+        <primitive  position={[200, 200, 200]} object={new THREE.AxesHelper(2000)} />
       </Canvas>
       {/* <Canvas>
       
@@ -219,6 +287,11 @@ function Scene(props) {
 
   const earthRef = useRef();
   const cloudsRef = useRef();
+  var x=0;
+  useFrame((state, delta) => {
+    // x=x+0.1
+    // cloudsRef.lookAt=[0,0,0];
+  })
 
   function Terre({ position }) {
     let data = createData().slice(3);
@@ -276,22 +349,56 @@ function Scene(props) {
   }
 
   return (
-    <>
+    <React.StrictMode>
+      {/* <group position={[0,0,0]}> */}
+      <mesh lookat={earthRef.position}  position={[300,1000,300]}>
+      <boxGeometry args={[200, 200, 100]} />
+      <meshBasicMaterial color={"blue"} />
+    </mesh>
+    <mesh lookat={[0,0,0]} position={[-800,150,300]}>
+      <boxGeometry args={[400, 200, 200]} />
+      <meshBasicMaterial color={"blue"} />
+    </mesh>
+    {/* </group> */}
       {/* <Nuage position={[0, 500, 0]}  /> */}
-      {/* <Terre position={[0, 500, 0]} /> */}
+      {/* <Terre ref={earthRef} position={[0, 500, 0]} /> */}
       {/* {Carres} */}
       {/* <Carres lookat={[0, 500, 0]} /> */}
       {/* <Caca position={[0, 500, 0]} /> */}
       <primitive position={[0, 500, 0]} object={new THREE.AxesHelper(2000)} />
-      {createData().map((data, i) => (
+      <primitive ref={earthRef} position={[0, 0, 0]} object={new THREE.AxesHelper(2000)} />
+      {/* <group position={[0, 500, 0]} > */}
+      {/* {createData().map((data, i) => (
         <CubeData
-          lookAt={[500, 500, 0]}
+          lookAt={[500, 500,500]}
           key={i}
           x={parseInt(data[0])}
           y={parseInt(data[1])}
           value2={parseFloat(data[2])}
         />
-      ))}
-    </>
+      ))} */}
+      <CubeData
+          lookAt={[0, 0,0]}
+          key={2}
+          x={468.45625326607126}
+          y={135.42053471500674}
+          value2={300.42053471500674}
+        />
+        <CubeData
+          lookAt={[500, 500,500]}
+          key={3}
+          x={224.94213795921218}
+          y={554.1439217783691}
+          value2={-68.77171312703784}
+        />
+{/* x: 468.45625326607126 */}
+{/* y: 135.42053471500674 */}
+{/* z: 135.42053471500674 */}
+
+{/* x: 224.94213795921218
+y: 554.1439217783691
+z: -68.77171312703784 */}
+      {/* </group> */}
+      </React.StrictMode>
   );
 }
